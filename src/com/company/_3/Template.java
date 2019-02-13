@@ -15,20 +15,16 @@ public abstract class Template {
     }
 
 
-    public void insert(User user) throws SQLException {
-        String query = createQuery();
+    public void insert(String query) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
-        setValues(user, preparedStatement);
+        setValues(preparedStatement);
 
         preparedStatement.executeUpdate();
     }
 
 
-    abstract void setValues(User user, PreparedStatement preparedStatement) throws SQLException;
-
-
-    abstract String createQuery();
+    abstract void setValues(PreparedStatement preparedStatement) throws SQLException;
 
 
 }

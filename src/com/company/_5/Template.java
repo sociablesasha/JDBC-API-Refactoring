@@ -1,7 +1,8 @@
-package com.company._4;
+package com.company._5;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public abstract class Template {
@@ -15,16 +16,28 @@ public abstract class Template {
     }
 
 
-    public void insert(String query) throws SQLException {
+    public Object select() throws SQLException {
+        String query = createQuery();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         setValues(preparedStatement);
 
-        preparedStatement.executeUpdate();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            return mapRow(resultSet);
+        } else {
+            return null;
+        }
     }
 
 
+    abstract Object mapRow(ResultSet resultSet) throws SQLException;
+
+
     abstract void setValues(PreparedStatement preparedStatement) throws SQLException;
+
+
+    abstract String createQuery();
 
 
 }

@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public abstract class Template {
+public class Template {
 
 
     private Connection connection;
@@ -16,33 +16,25 @@ public abstract class Template {
     }
 
 
-    public void insert(String query) throws SQLException {
+    public void insert(String query, PreparedStatementSetter preparedStatementSetter) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-        setValues(preparedStatement);
+        preparedStatementSetter.setValues(preparedStatement);
 
         preparedStatement.executeUpdate();
     }
 
 
-    public Object select(String query) throws SQLException {
+    public Object select(String query, PreparedStatementSetter preparedStatementSetter, RowMapper rowMapper) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-        setValues(preparedStatement);
+        preparedStatementSetter.setValues(preparedStatement);
 
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
-            return mapRow(resultSet);
+            return rowMapper.mapRow(resultSet);
         } else {
             return null;
         }
     }
-
-
-    abstract void setValues(PreparedStatement preparedStatement) throws SQLException;
-
-
-    abstract Object mapRow(ResultSet resultSet) throws SQLException;
 
 
 }

@@ -16,34 +16,32 @@ public class Dao {
     }
 
 
-    public Object selectById(final String id) throws SQLException {
+    public void insert (final User user) throws SQLException {
         Template template = new Template(connection) {
             @Override
-            Object mapRow(ResultSet resultSet) throws SQLException {
-                return new User(
-                        resultSet.getString("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("email")
-                );
-            }
-
-            @Override
             void setValues(PreparedStatement preparedStatement) throws SQLException {
-                preparedStatement.setString(1, id);
+                preparedStatement.setString(1, user.getId());
+                preparedStatement.setString(1, user.getName());
+                preparedStatement.setString(1, user.getEmail());
             }
 
             @Override
-            String createQuery() {
-                return "SELECT * FROM user WHERE id = ?";
+            Object mapRow(ResultSet resultSet) throws SQLException {
+                return null;
             }
         };
 
-        return template.select();
+        template.insert("INSERT INTO user VALUES (?, ?, ?)");
     }
 
 
-    public Object selectByIdAndName(final String id, final String name) throws SQLException {
+    public Object select (final String id) throws SQLException {
         Template template = new Template(connection) {
+            @Override
+            void setValues(PreparedStatement preparedStatement) throws SQLException {
+                preparedStatement.setString(1, id);
+            }
+
             @Override
             Object mapRow(ResultSet resultSet) throws SQLException {
                 return new User(
@@ -52,21 +50,9 @@ public class Dao {
                         resultSet.getString("email")
                 );
             }
-
-            @Override
-            void setValues(PreparedStatement preparedStatement) throws SQLException {
-                preparedStatement.setString(1, id);
-                preparedStatement.setString(2, name);
-            }
-
-            @Override
-            String createQuery() {
-                return "SELECT * FROM user WHERE id = ? AND name = ?";
-            }
         };
 
-        return template.select();
-    };
-
+        return template.select("SELECT * FROM user WHERE id = ?");
+    }
 
 }

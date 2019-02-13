@@ -16,8 +16,16 @@ public abstract class Template {
     }
 
 
-    public Object select() throws SQLException {
-        String query = createQuery();
+    public void insert(String query) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+        setValues(preparedStatement);
+
+        preparedStatement.executeUpdate();
+    }
+
+
+    public Object select(String query) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         setValues(preparedStatement);
@@ -31,13 +39,10 @@ public abstract class Template {
     }
 
 
-    abstract Object mapRow(ResultSet resultSet) throws SQLException;
-
-
     abstract void setValues(PreparedStatement preparedStatement) throws SQLException;
 
 
-    abstract String createQuery();
+    abstract Object mapRow(ResultSet resultSet) throws SQLException;
 
 
 }

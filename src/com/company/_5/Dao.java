@@ -16,38 +16,57 @@ public class Dao {
     }
 
 
-    public User selectById(String id) throws SQLException {
-        String query = createQuery();
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
+    public Object selectById(final String id) throws SQLException {
+        Template template = new Template(connection) {
+            @Override
+            Object mapRow(ResultSet resultSet) throws SQLException {
+                return new User(
+                        resultSet.getString("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email")
+                );
+            }
 
-        setValues(id, preparedStatement);
+            @Override
+            void setValues(PreparedStatement preparedStatement) throws SQLException {
+                preparedStatement.setString(1, id);
+            }
 
-        ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-            return mapRow(resultSet);
-        } else {
-            return null;
-        }
+            @Override
+            String createQuery() {
+                return "SELECT * FROM user WHERE id = ?";
+            }
+        };
+
+        return template.select();
     }
 
 
-    private User mapRow(ResultSet resultSet) throws SQLException {
-        return new User(
-                resultSet.getString("id"),
-                resultSet.getString("name"),
-                resultSet.getString("email")
-        );
-    }
+    public Object selectByIdAndName(final String id, final String name) throws SQLException {
+        Template template = new Template(connection) {
+            @Override
+            Object mapRow(ResultSet resultSet) throws SQLException {
+                return new User(
+                        resultSet.getString("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email")
+                );
+            }
 
+            @Override
+            void setValues(PreparedStatement preparedStatement) throws SQLException {
+                preparedStatement.setString(1, id);
+                preparedStatement.setString(2, name);
+            }
 
-    private void setValues(String id, PreparedStatement preparedStatement) throws SQLException {
-        preparedStatement.setString(1, id);
-    }
+            @Override
+            String createQuery() {
+                return "SELECT * FROM user WHERE id = ? AND name = ?";
+            }
+        };
 
-
-    private String createQuery() {
-        return "select * from user where id = ?";
-    }
+        return template.select();
+    };
 
 
 }

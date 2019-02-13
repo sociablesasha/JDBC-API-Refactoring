@@ -15,21 +15,17 @@ public class Dao {
     }
 
 
-    public void insert(User user) throws SQLException {
+    public void insert(final User user) throws SQLException {
         Template template = new Template(connection) {
             @Override
-            void setValues(User user, PreparedStatement preparedStatement) throws SQLException {
+            void setValues(PreparedStatement preparedStatement) throws SQLException {
                 preparedStatement.setString(1, user.getId());
                 preparedStatement.setString(2, user.getName());
                 preparedStatement.setString(3, user.getEmail());
             }
-
-            @Override
-            String createQuery() {
-                return "INSERT INTO user VALUES (?, ?, ?)";
-            }
         };
-        template.insert(user);
+        String query = "insert into user values(?, ?, ?)";
+        template.insert(query);
     }
 
 
